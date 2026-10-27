@@ -1,122 +1,60 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Alert, Col, Container, Row } from 'react-bootstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import BrandList from './components/BrandList'
+import ErrorAlert from './components/ErrorAlert'
+import Loader from './components/Loader'
+import OffersTable from './components/OffersTable'
+import SearchForm from './components/SearchForm'
+import { fetchOffers, selectSearch } from './store/searchSlice'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const dispatch = useDispatch()
+  const { query, selectedBrand, brands, offers } = useSelector(selectSearch)
+
+  const onRetryOffers = () => {
+    if (query && selectedBrand) dispatch(fetchOffers({ number: query, brand: selectedBrand }))
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Container className="py-4">
+      <h1 className="h3 mb-1">Поиск автозапчастей</h1>
+      <p className="text-muted mb-4">
+        Шаг 1: найдите производителей по артикулу. Шаг 2: выберите бренд, чтобы увидеть
+        аналоги и предложения.
+      </p>
 
-      <div className="ticks"></div>
+      <SearchForm />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <Row>
+        <Col md={3} className="mb-4">
+          <BrandList />
+        </Col>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        <Col md={9}>
+          <h2 className="h5 mb-2">
+            Предложения
+            {selectedBrand && <span className="text-muted fw-normal"> — {selectedBrand}</span>}
+          </h2>
+
+          {offers.status === 'idle' && (
+            <p className="text-muted">
+              {brands.status === 'succeeded'
+                ? 'Выберите производителя слева'
+                : 'Сначала выполните поиск по артикулу'}
+            </p>
+          )}
+          {offers.status === 'loading' && <Loader label="Загружаем предложения…" />}
+          {offers.status === 'failed' && <ErrorAlert message={offers.error} onRetry={onRetryOffers} />}
+          {offers.status === 'succeeded' &&
+            (offers.items.length ? (
+              <OffersTable rows={offers.items} />
+            ) : (
+              <Alert variant="info">
+                По артикулу «{query}» для бренда {selectedBrand} ничего не найдено
+              </Alert>
+            ))}
+        </Col>
+      </Row>
+    </Container>
   )
 }
-
-export default App
