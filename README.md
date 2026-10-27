@@ -1,16 +1,55 @@
-# React + Vite
+# Поиск автозапчастей (React + Redux)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Клиентское приложение для интеграции с API-сервисом поиска автозапчастей и аналогов
+[`wsprice`](https://lk.favorit-parts.ru/static/wsprice.pdf). Двухэтапный подбор номенклатуры:
 
-Currently, two official plugins are available:
+1. **Поиск производителей** — по артикулу получаем список брендов.
+2. **Аналоги и предложения** — по артикулу + бренду получаем аналоги и предложения по складам.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Запуск
 
-## React Compiler
+```bash
+npm i
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Скопируйте `.env.example` в `.env` (в репозиторий он не попадёт) и при необходимости
+  впишите свой ключ `VITE_API_KEY`. Ключ из примера — публичный тестовый из документации, рабочий.
+- Откройте `http://localhost:5173` и введите артикул, например `0189`.
 
-## Expanding the ESLint configuration
+## Стек
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Vite + React (JS)
+- Redux Toolkit: `configureStore`, `createSlice`, `createAsyncThunk` — официальный способ писать Redux,
+  статусы загрузки и защита от гонок через `requestId` из коробки
+- Bootstrap 5 (CSS) + `react-bootstrap` — готовые `Table`, `Spinner`, `Alert`, `ListGroup`, `Badge`
+- Запросы — нативный `fetch` + `URLSearchParams` (без axios): меньше зависимостей,
+  спецсимволы в номере/бренде кодируются автоматически
+
+## Почему прокси
+
+API `api.favorit-parts.ru` **не отдаёт CORS-заголовки**, поэтому из браузера `fetch()` напрямую
+заблокирован — хотя тот же URL в адресной строке открывается (к навигации CORS не применяется).
+Поэтому приложение ходит на свой домен `/api/...`, а Vite в dev-режиме пересылает запрос на API
+(`server.proxy` в [`vite.config.js`](vite.config.js)). На хостинге нужен аналогичный rewrite
+(Vercel `vercel.json` / Netlify `public/_redirects`).
+
+## Особенности API, которые учтены
+
+- Пустая «не найдено»-заглушка: `goods` из одного элемента с `goodsID =
+  00000000-0000-0000-0000-000000000000` и пустым `brand` — такие позиции отфильтровываются
+  (`src/api/normalize.js`)
+- Ошибка приходит не HTTP-статусом, а полем `{"error": "..."}` (часто со статусом 200) —
+  проверяется всегда (`src/api/favoritApi.js`)
+- `goods.price` помечен «НЕ ИСПОЛЬЗОВАТЬ» — цена берётся из `warehouses[].price`
+- Позиции с `warehouses: []` показываются приглушёнными как «Нет в наличии»
+- `shipmentDate` — дата отгрузки + время, до которого можно заказать — форматируется
+  через `Intl.DateTimeFormat('ru-RU')`
+- `notRefund` (необходим `info=on`) — бейдж «Невозвратный»
+
+## Что бы я улучшил при большем времени
+
+- Тесты на `normalize.js` и редьюсер (Vitest)
+- Debounce на вводе, кеш ответов, пагинация
+- Вынос ключа из фронтенда на бэкенд/прокси (сейчас `VITE_API_KEY` попадает в собранный JS —
+  для тестового это приемлемо)
