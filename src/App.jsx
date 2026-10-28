@@ -1,4 +1,7 @@
-import { Alert, Col, Container, Row } from 'react-bootstrap'
+import Alert from 'react-bootstrap/Alert'
+import Col from 'react-bootstrap/Col'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
 import { useDispatch, useSelector } from 'react-redux'
 import BrandList from './components/BrandList'
 import ErrorAlert from './components/ErrorAlert'
@@ -16,11 +19,12 @@ export default function App() {
   }
 
   return (
-    <Container className="py-4">
+    <Container className="py-4" fluid>
       <h1 className="h3 mb-1">Поиск автозапчастей</h1>
       <p className="text-muted mb-4">
-        Шаг 1: найдите производителей по артикулу. Шаг 2: выберите бренд, чтобы увидеть
-        аналоги и предложения.
+        Шаг 1: найдите производителей по артикулу. 
+        <br/>
+        Шаг 2: выберите бренд, чтобы увидеть аналоги и предложения.
       </p>
 
       <SearchForm />
