@@ -1,4 +1,3 @@
-// «Пустая» структура, которую API возвращает, когда деталь не найдена.
 const EMPTY_ID = '00000000-0000-0000-0000-000000000000'
 
 export const isEmptyGood = (g) => !g || g.goodsID === EMPTY_ID || !g.brand
@@ -14,7 +13,7 @@ export function toBrands(goods) {
 }
 
 // Этап 2: строка таблицы = товар × склад.
-// Искомая деталь — goods[0], аналоги — goods[0].analogues (по доке и по факту).
+// Искомая деталь - goods[0], аналоги - goods[0].analogues (по доке и по факту).
 export function toOfferRows(goods) {
   const requested = goods.filter((g) => !isEmptyGood(g));
   const analogues = requested.flatMap((g) => g.analogues ?? []).filter((g) => !isEmptyGood(g));

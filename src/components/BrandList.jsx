@@ -7,24 +7,26 @@ import ErrorAlert from './ErrorAlert'
 import Loader from './Loader'
 
 export default function BrandList() {
-  const dispatch = useDispatch()
-  const { brands, query, selectedBrand, offers } = useSelector(selectSearch)
+  const dispatch = useDispatch();
+  const { brands, query, selectedBrand } = useSelector(selectSearch);
 
   if (brands.status === 'idle') {
     return <p className="text-muted">Введите артикул, чтобы найти производителей</p>
   }
+  
   if (brands.status === 'loading') return <Loader label="Ищем производителей…" />
+  
   if (brands.status === 'failed') {
     return (
       <ErrorAlert message={brands.error} onRetry={() => dispatch(searchBrands(query))} />
     )
   }
+
   if (!brands.items.length) {
     return <Alert variant="info">По артикулу «{query}» ничего не найдено</Alert>
   }
 
   const onSelect = (brand) => {
-    // Повторный клик по уже выбранному бренду не шлёт лишний запрос.
     if (brand === selectedBrand) return
     dispatch(fetchOffers({ number: query, brand }))
   }
@@ -32,8 +34,9 @@ export default function BrandList() {
   return (
     <>
       <p className="text-muted small mb-2">
-        Найдено производителей: {brands.items.length}. Выберите, чтобы увидеть аналоги и
-        предложения
+        Найдено производителей: {brands.items.length}. 
+        <br/>
+        Выберите, чтобы увидеть аналоги и предложения
       </p>
       <ListGroup>
         {brands.items.map((b) => (

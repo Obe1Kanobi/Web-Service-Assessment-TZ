@@ -6,13 +6,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { searchBrands, selectSearch } from '../store/searchSlice'
 
 export default function SearchForm() {
-  const dispatch = useDispatch()
-  const { brands } = useSelector(selectSearch)
-  const [value, setValue] = useState('')
+  const dispatch = useDispatch();
+  const { brands } = useSelector(selectSearch);
+  const [value, setValue] = useState('');
 
   const onSubmit = (e) => {
-    e.preventDefault()
-    const number = value.trim()
+    e.preventDefault();
+    const number = value.trim();
     if (number) dispatch(searchBrands(number))
   }
 
@@ -20,7 +20,7 @@ export default function SearchForm() {
     <Form onSubmit={onSubmit} className="mb-4">
       <InputGroup>
         <Form.Control
-          placeholder="Артикул, например 0189"
+          placeholder="Артикул, например 0189 или 24"
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
