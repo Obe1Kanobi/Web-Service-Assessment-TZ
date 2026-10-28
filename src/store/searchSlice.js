@@ -38,7 +38,7 @@ const searchSlice = createSlice({
       .addCase(searchBrands.pending, (state, action) => {
         state.query = action.meta.arg
         state.selectedBrand = null
-        state.offers = emptyBlock // новый поиск сбрасывает этап 2
+        state.offers = emptyBlock
         state.brands = { ...emptyBlock, status: 'loading', requestId: action.meta.requestId }
       })
       .addCase(searchBrands.fulfilled, (state, action) => {
