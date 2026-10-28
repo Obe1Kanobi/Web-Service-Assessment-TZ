@@ -1,4 +1,5 @@
-import { Alert, Button } from 'react-bootstrap'
+import Alert from 'react-bootstrap/Alert'
+import Button from 'react-bootstrap/Button'
 
 export default function ErrorAlert({ message, onRetry }) {
   return (

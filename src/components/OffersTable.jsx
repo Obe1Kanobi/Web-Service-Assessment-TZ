@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Alert, Badge, Table } from 'react-bootstrap'
+import Table from 'react-bootstrap/Table'
+import Alert from 'react-bootstrap/Alert'
+import Badge from 'react-bootstrap/Badge' 
 import { formatPrice, formatShipmentDate } from '../utils/format'
 
 // Строка без остатка приглушена и уходит в конец списка.
@@ -34,49 +36,77 @@ export default function OffersTable({ rows }) {
     setPriceSort((cur) => (cur === 'asc' ? 'desc' : cur === 'desc' ? null : 'asc'))
   }
 
+  // Каждая строка — единый светлый «блок» с синим контуром (как у кнопки поиска)
+  // и скруглёнными углами. Бордер рисуется на ячейках строки, но образует
+  // общий контур всей строки: отступы заданы только по вертикали (0 5px).
+  const cellSide = {
+    borderTop: '1px solid var(--bs-primary)',
+    borderBottom: '1px solid var(--bs-primary)',
+    backgroundColor: '#fff',
+    textAlign: 'center'
+  }
+  const cellFirst = {
+    ...cellSide,
+    borderLeft: '1px solid var(--bs-primary)',
+    borderRadius: '0.375rem 0 0 0.375rem',
+  }
+  const cellLast = {
+    ...cellSide,
+    borderRight: '1px solid var(--bs-primary)',
+    borderRadius: '0 0.375rem 0.375rem 0',
+  }
+
   return (
     <>
-      <Table striped hover responsive size="sm" className="align-middle">
+      <Table
+        hover
+        responsive
+        size="sm"
+        className="align-middle"
+        style={{ borderCollapse: 'separate', borderSpacing: '0 5px' }}
+      >
         <thead>
           <tr>
-            <th>Производитель</th>
-            <th>Артикул</th>
-            <th>Наименование</th>
-            <th>Склад</th>
+            <th className="text-center" style={cellFirst}>№</th>
+            <th style={cellSide}>Производитель</th>
+            <th style={cellSide}>Артикул</th>
+            <th style={cellSide}>Наименование</th>
+            <th style={cellSide}>Склад</th>
             <th
               className="text-end"
-              style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ ...cellSide, cursor: 'pointer', whiteSpace: 'nowrap' }}
               onClick={togglePriceSort}
               title="Сортировать по цене"
             >
               Цена, ₽ {priceSort === 'asc' ? '↑' : priceSort === 'desc' ? '↓' : ''}
             </th>
-            <th className="text-end">Остаток, шт.</th>
-            <th>Отгрузка</th>
+            <th className="text-end" style={cellSide}>Остаток, шт.</th>
+            <th style={cellLast}>Отгрузка</th>
           </tr>
         </thead>
         <tbody>
-          {sorted.map((r) => (
+          {sorted.map((r, index) => (
             <tr key={r.id} className={r.stock === 0 ? 'text-muted' : ''}>
-              <td>
+              <td className="text-center" style={cellFirst}>{index + 1}</td>
+              <td style={cellSide}>
                 {r.brand}
                 {r.isRequested && (
-                  <Badge bg="primary" className="ms-1">
+                  <Badge bg="primary">
                     Искомая
                   </Badge>
                 )}
                 {r.notRefund && (
-                  <Badge bg="warning" text="dark" className="ms-1">
+                  <Badge bg="warning" text="dark">
                     Невозвратный
                   </Badge>
                 )}
               </td>
-              <td>{r.number}</td>
-              <td>{r.name}</td>
-              <td>{r.warehouse ?? '—'}</td>
-              <td className="text-end">{formatPrice(r.price)}</td>
-              <td className="text-end">{r.stock > 0 ? r.stock : 'Нет в наличии'}</td>
-              <td>{formatShipmentDate(r.shipmentDate)}</td>
+              <td style={cellSide}>{r.number}</td>
+              <td style={cellSide}>{r.name}</td>
+              <td style={cellSide}>{r.warehouse ?? '—'}</td>
+              <td className="text-end" style={cellSide}>{formatPrice(r.price)}</td>
+              <td className="text-end" style={cellSide}>{r.stock > 0 ? r.stock : 'Нет в наличии'}</td>
+              <td style={cellLast}>{formatShipmentDate(r.shipmentDate)}</td>
             </tr>
           ))}
         </tbody>

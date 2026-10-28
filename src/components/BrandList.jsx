@@ -1,4 +1,6 @@
-import { Alert, Badge, ListGroup } from 'react-bootstrap'
+import Alert from 'react-bootstrap/Alert'
+import Badge from 'react-bootstrap/Badge'
+import ListGroup from 'react-bootstrap/ListGroup'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchOffers, searchBrands, selectSearch } from '../store/searchSlice'
 import ErrorAlert from './ErrorAlert'

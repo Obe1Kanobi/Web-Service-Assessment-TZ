@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Button, Form, InputGroup } from 'react-bootstrap'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import InputGroup from 'react-bootstrap/InputGroup'
 import { useDispatch, useSelector } from 'react-redux'
 import { searchBrands, selectSearch } from '../store/searchSlice'
 
