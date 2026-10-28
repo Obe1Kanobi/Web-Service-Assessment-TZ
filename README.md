@@ -129,6 +129,6 @@ API `api.favorit-parts.ru` **не отдаёт CORS-заголовки**, поэ
 Основную часть кода — каркас, API-слой, Redux-слайс, компоненты, тесты — написал
 ИИ-ассистент (Roo Code) по техническому плану
 [«План поиск автозапчастей (React + Redux)»](План%20поиск%20автозапчастей%20%28React%20%2B%20Redux%29.md).
-Человек правил стили и вёрстку (например,
-[`src/components/style/OffersTable.style.jsx`](src/components/style/OffersTable.style.jsx#L1)),
-проверял работу и вносил правки.
+Я сам правил стили и вёрстку (например,
+[`src/components/style/OffersTable.style.jsx`](src/components/style/OffersTable.style.jsx#L1)), а также
+проверял действие компонентов, поведение запросов и вносил правки.
